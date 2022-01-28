@@ -1,0 +1,265 @@
+{% extends 'adminlte/base.html' %}
+{% load static %}
+
+{% block page_name %}
+Taxa de Ocupação
+{% endblock%}
+{% block breadcrumbs %}
+
+<ol class="breadcrumb float-sm-right">
+  <li class="breadcrumb-item"><a href="#">Início</a></li>
+  <li class="breadcrumb-item active">Taxa de Ocupação</li>
+</ol>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+  <div class="card">    
+    <div class="card-body">
+      <div class="row">
+        <div class="col-12">
+          <form method="get" action="" >
+            <div class="form-row">
+              <div class="col-md-4 mb-4 row">
+                <label for="inputPassword" class="col-sm-2 col-form-label">Início</label>
+                <div class="col-sm-10">
+                  <input type="datetime-local" class="form-control" id="inputPassword">
+                </div>
+              </div>
+              <div class="col-md-4 mb-4 row">
+                <label for="inputPassword" class="col-sm-2 col-form-label">Fim</label>
+                <div class="col-sm-10">
+                  <input type="datetime-local" class="form-control" id="inputPassword">
+                </div>
+              </div>
+              
+              <div class="col-md-2 mb-3">              
+                <button type="submit" class="btn btn-primary"><i class="fa fa-filter"></i> Filtrar</button>
+              </div>        
+            </div>    
+          </form>
+        </div>
+      </div>      
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-3 col-6">
+      <!-- small box -->
+      <div class="small-box bg-info">
+        <div class="inner">
+          <h3>{{space_total_occupancy}}</h3>
+
+          <p>Vagas Ocupadas</p>
+        </div>
+        <div class="icon">
+          <i class="fa fa-fist-raised"></i>
+        </div>
+      </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-3 col-6">
+      <!-- small box -->
+      <div class="small-box" style="background-color: #c1c7d1;">
+        <div class="inner">
+          <h3>{{space_total_availability}}</h3>
+          <p>Vagas Livres</p>
+        </div>
+        <div class="icon">
+          <i class="fa fa-parking"></i>
+        </div>        
+      </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-3 col-6">
+      <!-- small box -->
+      <div class="small-box bg-warning">
+        <div class="inner">
+          <h3>{{current_visitors_count}}</h3>
+
+          <p>Visitantes Atuais</p>
+        </div>
+        <div class="icon">
+          <i class="ion ion-person"></i>
+        </div>        
+      </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-3 col-6">
+      <!-- small box -->
+      <div class="small-box bg-primary">
+        <div class="inner">
+          <h3>{{special_space_occupancy}} / {{special_space_count}}</h3>
+
+          <p>Vagas Preferenciais</p>
+        </div>
+        <div class="icon">
+          <i class="fa fa-blind"></i>
+        </div>      
+      </div>
+    </div>
+    <!-- ./col -->
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <!-- PIE CHART -->
+      <div class="card card-primary">
+        <div class="card-header" style="background-color: #527388;">
+          <h3 class="card-title">Taxa de Ocupação Atual</h3>
+
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-tool" data-card-widget="remove">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <canvas id="pieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+        </div>
+        <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+    </div>
+    <!-- /.col (LEFT) -->
+    <div class="col-md-6">
+      <!-- LINE CHART -->
+      <div class="card card-info">
+        <div class="card-header">
+          <h3 class="card-title">Taxa de Ocupação Semanal  - {{total_visitor_by_weekday}}</h3>
+
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-tool" data-card-widget="remove">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="chart">
+            <canvas id="lineChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+          </div>
+        </div>
+        <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+    </div>
+    <!-- /.col (RIGHT) -->
+  </div>
+  <!-- /.row -->
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- ChartJS -->
+<script src="{% static 'admin-lte/plugins/chart.js/Chart.min.js'%}"></script>
+
+<!-- Page specific script -->
+<script>
+  $(function () {
+    
+
+    //-------------
+    //- PIE CHART -
+    //-------------
+    // Get context with jQuery - using jQuery's .get() method.
+    var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
+    var pieData = {
+      labels: [
+          'Livres',
+          'Ocupadas'
+      ],
+      datasets: [
+        {
+          data: [{{space_total_availability}},{{ space_total_occupancy }}],
+          backgroundColor : ['#c1c7d1', '#3b8bba'],
+        }
+      ]
+    };
+    var pieOptions     = {
+      maintainAspectRatio : false,
+      responsive : true,
+    }
+    //Create pie or douhnut chart
+    // You can switch between pie and douhnut using the method below.
+    new Chart(pieChartCanvas, {
+      type: 'pie',
+      data: pieData,
+      options: pieOptions
+    })
+
+    //-------------
+    //- LINE CHART -
+    //--------------
+
+    let line_labels = [
+    {% for visitor_7_days in visitor_7_days_count %}
+      '{{ visitor_7_days.enter_date__date | date:"d/m/Y"  }}',
+    {% endfor %}
+    ];
+
+    let line_data = [
+    {% for visitor_7_days in visitor_7_days_count %}
+      {{ visitor_7_days.count }},
+    {% endfor %}
+    ];
+
+    var lineChartData = {
+      labels  : line_labels,
+      datasets: [
+        {
+          label               : 'Digital Goods',
+          backgroundColor     : 'rgba(60,141,188,0.9)',
+          borderColor         : 'rgba(60,141,188,0.8)',
+          pointRadius          : false,
+          pointColor          : '#3b8bba',
+          pointStrokeColor    : 'rgba(60,141,188,1)',
+          pointHighlightFill  : '#fff',
+          pointHighlightStroke: 'rgba(60,141,188,1)',
+          data                : line_data
+        },
+      ]
+    }
+    var lineChartOptions = {
+      maintainAspectRatio : false,
+      responsive : true,
+      legend: {
+        display: false
+      },
+      scales: {
+        xAxes: [{
+          gridLines : {
+            display : false,
+          }
+        }],
+        yAxes: [{
+          gridLines : {
+            display : false,
+          }
+        }]
+      }
+    }
+    var lineChartCanvas = $('#lineChart').get(0).getContext('2d')
+    var lineChartOptions = $.extend(true, {}, lineChartOptions)
+    var lineChartData = $.extend(true, {}, lineChartData)
+    lineChartData.datasets[0].fill = false;
+    lineChartOptions.datasetFill = false
+
+    var lineChart = new Chart(lineChartCanvas, {
+      type: 'line',
+      data: lineChartData,
+      options: lineChartOptions
+    })
+
+    
+  })
+</script>
+{% endblock %}

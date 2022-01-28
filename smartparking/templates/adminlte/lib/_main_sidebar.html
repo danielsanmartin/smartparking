@@ -1,0 +1,84 @@
+{% load adminlte_helpers %}
+{%load static %}
+<!-- Left side column. contains the sidebar -->
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+     <!-- Brand Logo -->
+    {% block logo %}
+        <a href="/" class="brand-link">
+            <img src="{%static 'logo-horizontal-white.png' %}" alt="UpPoints Logo" style="opacity: .8; width:200px;">
+            {% block logo_text %}            
+            {% endblock %}
+        </a>
+    {% endblock %}
+    <!-- sidebar: style can be found in sidebar.less -->
+    <div class="sidebar">
+        <!-- Sidebar user panel -->
+        {% block user_panel %}
+        <!-- Sidebar user panel (optional) -->
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image">
+          <img src="{% avatar_url size=90 %}" class="img-circle elevation-2" alt="User Image">
+        </div>
+        <div class="info">
+          <a href="#" class="d-block">{% firstof request.user.get_full_name request.user.username %}</a>
+        </div>
+      </div>
+        {% endblock %}
+
+        {% block form %}{% endblock %}
+
+        <!-- sidebar menu: : style can be found in sidebar.less -->
+        {% block nav_links_ul %}
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            {% block nav_links_outer %}
+            <li class="nav-header">{% block nav_heading %}MENU PRINCIPAL{% endblock %}</li>
+
+            {% block nav_links %}                                
+                <li class="nav-item">
+                    {% if request.path == '/parking/report/occupancy/' or request.path == '/parking/'%}
+                    <a href="{% url 'parking:occupancy_report' %}" class="nav-link active">
+                    {% else %}
+                    <a href="{% url 'parking:occupancy_report' %}" class="nav-link">
+                    {% endif %}    
+                        <i class="nav-icon fas fa-tachometer-alt"></i> <p>Taxa de ocupação</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    {% if request.path == '/parking/report/spacemostused/'%}
+                    <a href="{% url 'parking:space_most_used_report' %}" class="nav-link active">
+                    {% else %}
+                    <a href="{% url 'parking:space_most_used_report' %}" class="nav-link">
+                    {% endif %}
+                    
+                        <i class="nav-icon fas fa-trophy"></i> <p>Vagas mais utilizadas</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    {% if request.path == '/parking/spacealert/list/'%}
+                    <a href="{% url 'parking:spacealert_list' %}" class="nav-link active">
+                    {% else %}
+                    <a href="{% url 'parking:spacealert_list' %}" class="nav-link">
+                    {% endif %}
+                    
+                        <i class="nav-icon fas fa-parking"></i> <p>Alertas de Vagas</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    {% if request.path == '/parking/orcalert/list/'%}
+                    <a href="{% url 'parking:ocralert_list' %}" class="nav-link active">
+                    {% else %}
+                    <a href="{% url 'parking:ocralert_list' %}" class="nav-link">
+                    {% endif %}
+                    
+                        <i class="nav-icon fas fa-car"></i> <p>Alertas de Veículos</p>
+                    </a>
+                </li>
+            {% endblock nav_links %}
+            {% endblock nav_links_outer %}
+            </ul>
+            </nav>
+        {% endblock nav_links_ul %}
+    </div>
+    <!-- /.sidebar -->
+</aside>
