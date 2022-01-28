@@ -1,3 +1,3 @@
 # README #
 
-This is a sample project for smart parking. 
+This project is an application example for smart parking.
